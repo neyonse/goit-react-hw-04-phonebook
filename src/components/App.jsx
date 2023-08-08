@@ -1,35 +1,54 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Section } from './Section';
 import { AddContactForm } from './AddContactForm';
 import { Filter } from './Filter';
 import { ContactsList } from './ContactsList';
 
-export class App extends Component {
-  state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-    filter: '',
-  };
+const initialContacts = [
+  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+];
 
-  handleAddContact = newContact => {
-    const isAdded = this.isContactAlreadyAdded(newContact);
+export function App() {
+  const [contacts, setContacts] = useState(initialContacts);
+  const [filter, setFilter] = useState('');
+  const [localStorageInitialized, setLocalStorageInitialized] = useState(false);
+
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    const contactsParsed = JSON.parse(storedContacts);
+
+    if (contactsParsed !== null) {
+      setContacts(contactsParsed);
+    } else {
+      setContacts(initialContacts);
+    }
+
+    if (!localStorageInitialized) {
+      setLocalStorageInitialized(true);
+    }
+  }, [localStorageInitialized]);
+
+  useEffect(() => {
+    if (localStorageInitialized) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    }
+  }, [contacts, localStorageInitialized]);
+
+  const handleAddContact = newContact => {
+    const isAdded = isContactAlreadyAdded(newContact);
 
     if (isAdded !== -1) {
       alert(`${newContact.name} is already in contacts`);
       return;
     }
 
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, newContact],
-    }));
+    setContacts(prevContacts => [...prevContacts, newContact]);
   };
 
-  isContactAlreadyAdded = newContact => {
-    const { contacts } = this.state;
+  const isContactAlreadyAdded = newContact => {
     const newContactLowerCase = newContact.name.toLowerCase();
 
     return contacts.findIndex(
@@ -37,12 +56,11 @@ export class App extends Component {
     );
   };
 
-  handleFilterChange = filterWord => {
-    this.setState({ filter: filterWord });
+  const handleFilterChange = filterWord => {
+    setFilter(filterWord);
   };
 
-  getFilteredContacts() {
-    const { contacts, filter } = this.state;
+  const getFilteredContacts = () => {
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
@@ -50,49 +68,28 @@ export class App extends Component {
     return filteredContacts.sort((a, b) =>
       a.name.toLowerCase().localeCompare(b.name.toLowerCase())
     );
-  }
-
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
   };
 
-  componentDidUpdate(_, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const contactsParsed = JSON.parse(contacts);
-    console.log(contactsParsed);
-
-    if (contactsParsed !== null) {
-      this.setState({ contacts: contactsParsed });
-    }
-  }
-
-  render() {
-    const { contacts, filter } = this.state;
-    const filteredContacts = this.getFilteredContacts();
-
-    return (
-      <div className="main-wrapper">
-        <Section className="addContactSection" title="Phonebook">
-          <AddContactForm onAddContact={this.handleAddContact} />
-        </Section>
-        {contacts.length !== 0 && (
-          <Section className="contactListSection" title="Contacts">
-            <Filter value={filter} onFilterChange={this.handleFilterChange} />
-            <ContactsList
-              contacts={filteredContacts}
-              onDeleteContact={this.deleteContact}
-            />
-          </Section>
-        )}
-      </div>
+  const deleteContact = id => {
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== id)
     );
-  }
+  };
+
+  return (
+    <div className="main-wrapper">
+      <Section className="addContactSection" title="Phonebook">
+        <AddContactForm onAddContact={handleAddContact} />
+      </Section>
+      {contacts.length !== 0 && (
+        <Section className="contactListSection" title="Contacts">
+          <Filter value={filter} onFilterChange={handleFilterChange} />
+          <ContactsList
+            contacts={getFilteredContacts()}
+            onDeleteContact={deleteContact}
+          />
+        </Section>
+      )}
+    </div>
+  );
 }
