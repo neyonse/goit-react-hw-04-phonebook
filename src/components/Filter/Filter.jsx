@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import css from './Filter.module.css';
 import { LuSearch } from 'react-icons/lu';
+import PropTypes from 'prop-types';
 
-export const Filter = ({ value, onFilterChange }) => {
+export function Filter({ value, onFilterChange }) {
   const handleChange = e => {
     const { value } = e.currentTarget;
 
@@ -25,7 +24,7 @@ export const Filter = ({ value, onFilterChange }) => {
       />
     </div>
   );
-};
+}
 
 Filter.propTypes = {
   value: PropTypes.string.isRequired,

@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import css from './ContactsList.module.css';
 import { ContactCard } from 'components/ContactCard';
+import PropTypes from 'prop-types';
 
-export const ContactsList = ({ contacts, onDeleteContact }) => {
+export function ContactsList({ contacts, onDeleteContact }) {
   return (
     <ul className={css.list}>
       {contacts.map(({ id, name, number }) => {
@@ -19,7 +18,7 @@ export const ContactsList = ({ contacts, onDeleteContact }) => {
       })}
     </ul>
   );
-};
+}
 
 ContactsList.propTypes = {
   contacts: PropTypes.arrayOf(

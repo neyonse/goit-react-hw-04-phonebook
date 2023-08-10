@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import css from './AddContactForm.module.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import { nanoid } from 'nanoid';
-import css from './AddContactForm.module.css';
+import PropTypes from 'prop-types';
 
 const initialValues = {
   name: '',
@@ -27,7 +26,7 @@ const schema = yup.object({
     .required(`Phone number field can't be empty`),
 });
 
-export const AddContactForm = ({ onAddContact }) => {
+export function AddContactForm({ onAddContact }) {
   const createNewContact = (name, number) => ({
     id: nanoid(),
     name: name.trim(),
@@ -71,7 +70,7 @@ export const AddContactForm = ({ onAddContact }) => {
       </Form>
     </Formik>
   );
-};
+}
 
 AddContactForm.propTypes = {
   onAddContact: PropTypes.func.isRequired,

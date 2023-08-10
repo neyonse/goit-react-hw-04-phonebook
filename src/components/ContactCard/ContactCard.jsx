@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import css from './ContactCard.module.css';
 import { FaPhoneAlt } from 'react-icons/fa';
+import PropTypes from 'prop-types';
 
-export const ContactCard = ({ id, name, number, onDelete }) => {
+export function ContactCard({ id, name, number, onDelete }) {
   return (
     <li className={css.contactCard} id={id}>
       <div className={css.contactDetails}>
@@ -25,7 +24,7 @@ export const ContactCard = ({ id, name, number, onDelete }) => {
       </button>
     </li>
   );
-};
+}
 
 ContactCard.propTypes = {
   id: PropTypes.string.isRequired,
